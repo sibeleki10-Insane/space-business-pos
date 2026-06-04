@@ -212,14 +212,22 @@ function seedDefaultData(): void {
       receipt_footer: 'Please come again.',
       auto_print_receipt: 'false',
       theme: 'light',
-      supabase_url: '',
-      supabase_anon_key: '',
+      supabase_url: process.env.SUPABASE_URL || '',
+      supabase_anon_key: process.env.SUPABASE_ANON_KEY || '',
       location_name: 'Main Store',
     }
     const stmt = db.prepare('INSERT INTO app_settings (key, value, updated_at) VALUES (?, ?, ?)')
     for (const [k, v] of Object.entries(defaults)) {
       stmt.run(k, v, now)
     }
+  } else {
+    // Keep Supabase credentials in sync with .env on every startup
+    const now = new Date().toISOString()
+    const upsert = db.prepare(
+      'INSERT OR REPLACE INTO app_settings (key, value, updated_at) VALUES (?, ?, ?)'
+    )
+    if (process.env.SUPABASE_URL) upsert.run('supabase_url', process.env.SUPABASE_URL, now)
+    if (process.env.SUPABASE_ANON_KEY) upsert.run('supabase_anon_key', process.env.SUPABASE_ANON_KEY, now)
   }
 }
 

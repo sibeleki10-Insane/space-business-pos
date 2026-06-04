@@ -1,6 +1,26 @@
 import { app, BrowserWindow, shell, ipcMain } from 'electron'
 import path from 'path'
+import { readFileSync } from 'fs'
 import { initDatabase } from './database'
+
+function loadEnvFile(): void {
+  const candidates = [
+    path.join(app.getPath('userData'), '.env'),
+    path.join(__dirname, '../../.env'),
+  ]
+  for (const envPath of candidates) {
+    try {
+      const lines = readFileSync(envPath, 'utf-8').split('\n')
+      for (const line of lines) {
+        const m = line.trim().match(/^([A-Z_][A-Z0-9_]*)=(.+)$/)
+        if (m && !process.env[m[1]]) {
+          process.env[m[1]] = m[2].replace(/^["']|["']$/g, '')
+        }
+      }
+      break
+    } catch {}
+  }
+}
 import { initSync } from './sync'
 import { registerProductHandlers } from './ipc/products'
 import { registerCategoryHandlers } from './ipc/categories'
@@ -44,6 +64,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  loadEnvFile()
   initDatabase()
   registerProductHandlers()
   registerCategoryHandlers()

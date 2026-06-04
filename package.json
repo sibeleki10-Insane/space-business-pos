@@ -46,6 +46,7 @@
   "build": {
     "appId": "com.pos.system",
     "productName": "Space-Business POS",
+    "publish": "never",
     "directories": {
       "output": "release"
     },

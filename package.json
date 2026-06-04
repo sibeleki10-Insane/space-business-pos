@@ -2,7 +2,7 @@
   "name": "pos-system",
   "version": "1.0.0",
   "description": "Offline-first Point of Sale system with Supabase cloud sync",
-  "main": "dist/main/index.js",
+  "main": "dist/main/main/index.js",
   "author": "",
   "license": "MIT",
   "scripts": {
